@@ -32,6 +32,10 @@ Multi-agent AI system for enterprise application development using AWS Bedrock A
 ## Quick Start
 
 ```bash
+# 0. PPC setup
+brew install finch
+finch vm init
+
 # 1. Configure environment
 cp backend/.env.example backend/.env
 # Edit backend/.env with your AWS account and admin credentials
@@ -106,6 +110,32 @@ All resources use `citadel-*` prefix with environment suffix:
 - **Buckets**: `citadel-{resource}-{env}-{account}-{region}`
 - **Per-app APIs**: `citadel-app-{appId}-{env}`
 - **Scoped IAM roles**: `citadel-agent-{appId}`, `citadel-ds-{dataStoreId}`
+
+## PPC Sandpit Deployment Notes
+
+Changes made when deploying to the `ppc-sandpit` AWS profile:
+
+**Frontend install command** — `deploy.sh` was updated to use `npm install` instead of `npm ci` for the frontend build step, because the repo does not include a `package-lock.json` and `npm ci` requires one.
+
+**AWS SSO login required before deploy** — the `ppc-sandpit` profile uses AWS SSO. Ensure you are logged in before running the script, otherwise CDK will fail with "no credentials have been configured":
+
+```bash
+aws sso login --profile ppc-sandpit
+```
+
+**Bootstrap required (first deploy only)** — CDK bootstrap must be run once before the first deploy, otherwise stacks fail with `SSM parameter /cdk-bootstrap/hnb659fds/version not found`:
+
+```bash
+cd backend && npx cdk bootstrap aws://041073296931/ap-southeast-2 --profile ppc-sandpit
+```
+
+**Deploy command:**
+
+```bash
+./deploy.sh --profile ppc-sandpit
+```
+
+**Deployed URL (dev):** https://d1gx54o89mc4l4.cloudfront.net
 
 ## Cleanup
 

@@ -106,7 +106,7 @@ capture_git_info() {
 build_frontend() {
   log "Building frontend..."
   pushd frontend > /dev/null
-  npm ci --prefer-offline 2>&1 | tail -1
+  npm install 2>&1 | tail -1
   npm run build 2>&1 | tee -a "$DEPLOY_LOG"
   # Record build manifest (file listing with hashes)
   find build -type f -exec md5sum {} \; | sort > build/.manifest
